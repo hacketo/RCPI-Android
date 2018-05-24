@@ -44,13 +44,10 @@ public class MainActivity extends AppCompatActivity{
 
     public static String TAG = "MainActivity";
 
-    //private WebSocketClient client;
     private Spinner sItems;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> films_spinner;
 
-    private BroadcastReceiver message_receiver;
-    private BroadcastReceiver error_receiver;
     public static String ERROR_ACTION = "error";
     public static String MESSAGE_ACTION = "nm";
     public static String MESSAGE_KEY = "data";
