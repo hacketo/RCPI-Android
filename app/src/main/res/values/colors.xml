@@ -3,6 +3,9 @@
     <color name="colorPrimary">#41a93a</color>
     <color name="colorPrimaryDark">#419f30</color>
     <color name="colorAccent">#53ff40</color>
-    <color name="background">#101010</color>
-    <color name="font_color">#fff</color>
+    <color name="background">#eaeaea</color>
+    <color name="font_color">#181818</color>
+    <color name="videoLine">#aafccc0e</color>
+    <color name="audioLine">#aa0e5dfc</color>
+    <color name="subtitlesLine">#aa7aae32</color>
 </resources>

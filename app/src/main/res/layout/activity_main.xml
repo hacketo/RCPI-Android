@@ -8,8 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="fr.d3vx.rcpi.MainActivity"
-    android:background="#434343">
+    tools:context="fr.d3vx.rcpi.MainActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -30,29 +29,24 @@
                 android:layout_width="0dp"
                 android:layout_height="20dp"
                 android:background="#00ff00"
-                android:layout_weight="0.5">
+                android:layout_weight="0.5"
+                android:layout_marginTop="@dimen/block_lines_top"
+                android:layout_marginStart="@dimen/lines_radius">
             </View>
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_refresh_24px"
-                android:text="@string/pad_reload"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/but_reload"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
 
             <EditText
                 android:id="@+id/edit_url"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="6.5"
+                android:layout_weight="7.5"
                 android:text=""
+                android:inputType="textUri"
                 android:textColor="@color/font_color"/>
 
             <ImageButton
                 android:text="@string/pad_clear"
                 android:src="@drawable/ic_baseline_cancel_24px"
+                android:contentDescription="@string/pad_clear"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:id="@+id/but_clear"
@@ -62,6 +56,7 @@
 
             <ImageButton
                 android:src="@drawable/ic_baseline_link_24px"
+                android:contentDescription="@string/pad_paste"
                 android:text="@string/pad_paste"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -78,12 +73,23 @@
             android:layout_weight="1"
             android:weightSum="5">
 
+            <ImageButton
+                android:src="@drawable/ic_baseline_refresh_24px"
+                android:contentDescription="@string/pad_reload"
+                android:text="@string/pad_reload"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/but_reload"
+                android:onClick="buttonClicked"
+                android:layout_weight="0.5" />
+
             <Spinner
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="4.5"
+                android:layout_weight="4"
                 android:id="@+id/spinner"
-                android:textColor="@color/font_color" />
+                android:textColor="@color/font_color"
+                android:textSize="@dimen/list_entries_font"/>
 <!--
             <Button
                 android:layout_width="0dp"
@@ -94,6 +100,7 @@
 
             <ImageButton
                 android:src="@drawable/ic_baseline_open_in_browser_24px"
+                android:contentDescription="@string/pad_open"
                 android:text="@string/pad_open"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -103,164 +110,234 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:weightSum="5">
 
-            <ImageButton
-                android:src="@drawable/ic_baseline_play_pause_48px"
-                android:text="@string/pad_play"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/but_play"
-                android:onClick="buttonClicked"
-                android:layout_weight="1"/>
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_fast_rewind_24px"
-                android:text="@string/pad_back600"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/but_back600"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_rewind_24px"
-                android:text="@string/pad_back30"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/but_back30"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_forward_24px"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/but_fwd30"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_fast_forward_24px"
-                android:text="@string/pad_fwd600"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/but_fwd600"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <ImageButton
-                android:src="@drawable/ic_baseline_volume_off_24px"
-                android:text="@string/pad_volup"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/but_voloff"
-                android:clickable="false"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
+                android:weightSum="5"
+                android:background="@drawable/video_bg"
+                android:layout_marginTop="@dimen/block_lines_top"
+                android:layout_marginBottom="@dimen/block_bottom">
 
-            <ImageButton
-                android:src="@drawable/ic_baseline_volume_up_24px"
-                android:text="@string/pad_volup"
+                <ImageButton
+                    android:src="@drawable/ic_baseline_play_pause_48px"
+                    android:contentDescription="@string/pad_play"
+                    android:text="@string/pad_play"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_play"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_fast_rewind_24px"
+                    android:contentDescription="@string/pad_back600"
+                    android:text="@string/pad_back600"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_back600"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_rewind_24px"
+                    android:contentDescription="@string/pad_back30"
+                    android:text="@string/pad_back30"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_back30"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_forward_24px"
+                    android:contentDescription="@string/pad_fwd30"
+                    android:text="@string/pad_fwd30"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_fwd30"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_fast_forward_24px"
+                    android:contentDescription="@string/pad_fwd600"
+                    android:text="@string/pad_fwd600"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_fwd600"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/but_volup"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
+                android:layout_height="wrap_content"
+                android:id="@+id/videotv"
+                android:layout_marginStart="@dimen/lines_text_left"
+                android:background="@color/background"
+                android:text="@string/block_video"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"/>
+        </RelativeLayout>
 
-            <ImageButton
-                android:src="@drawable/ic_baseline_volume_down_24px"
-                android:text="@string/pad_voldown"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/but_voldown"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_skip_next_24px"
-                android:text="@string/pad_audionext"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/but_audionext"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_skip_previous_24px"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/but_audioprev"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
-        </LinearLayout>
-
-
-
-        <LinearLayout
-            android:orientation="horizontal"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:weightSum="5">
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_subtitles_24px"
-                android:text="@string/pad_subtitles"
-                android:layout_width="0dp"
+            android:layout_weight="1">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/but_subtitles"
-                android:onClick="buttonClicked"
-                android:layout_weight="1"/>
+                android:background="@drawable/audio_bg"
+                android:layout_marginTop="@dimen/block_lines_top"
+                android:layout_marginBottom="@dimen/block_bottom">
 
-            <ImageButton
-                android:src="@drawable/ic_baseline_skip_next_24px"
-                android:layout_width="0dp"
+                <ImageButton
+                    android:src="@drawable/ic_baseline_volume_off_24px"
+                    android:contentDescription="@string/pad_voloff"
+                    android:text="@string/pad_voloff"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_voloff"
+                    android:clickable="false"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_volume_up_24px"
+                    android:contentDescription="@string/pad_volup"
+                    android:text="@string/pad_volup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_volup"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_volume_down_24px"
+                    android:contentDescription="@string/pad_voldown"
+                    android:text="@string/pad_voldown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_voldown"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_skip_next_24px"
+                    android:contentDescription="@string/pad_audionext"
+                    android:text="@string/pad_audionext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_audionext"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_skip_previous_24px"
+                    android:contentDescription="@string/pad_audioprev"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_audioprev"
+                    android:onClick="buttonClicked"
+                    android:text="@string/pad_audioprev"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/audiotv"
+                android:layout_marginStart="@dimen/lines_text_left"
+                android:background="@color/background"
+                android:text="@string/block_audio"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"/>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/but_subtitlesnext"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
+                android:weightSum="5"
+                android:background="@drawable/subtl_bg"
+                android:layout_marginTop="@dimen/block_lines_top"
+                android:layout_marginBottom="@dimen/block_bottom">
 
-            <ImageButton
-                android:src="@drawable/ic_baseline_skip_previous_24px"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/but_subtitlesprev"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
+                <ImageButton
+                    android:src="@drawable/ic_baseline_subtitles_24px"
+                    android:contentDescription="@string/pad_subtitles"
+                    android:text="@string/pad_subtitles"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_subtitles"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_skip_next_24px"
+                    android:contentDescription="@string/pad_subtitlesnext"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_subtitlesnext"
+                    android:onClick="buttonClicked"
+                    android:text="@string/pad_subtitlesnext"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_skip_previous_24px"
+                    android:contentDescription="@string/pad_subtitlesprev"
+                    android:layout_width="0dp"
+                    android:text="@string/pad_subtitlesprev"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_subtitlesprev"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
 
 
-            <ImageButton
-                android:src="@drawable/ic_baseline_fast_rewind_24px"
-                android:text="@string/pad_subtitlesdelaydown"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/but_subtitlesdelaydown"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
+                <ImageButton
+                    android:src="@drawable/ic_baseline_fast_rewind_24px"
+                    android:contentDescription="@string/pad_subtitlesdelaydown"
+                    android:text="@string/pad_subtitlesdelaydown"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_subtitlesdelaydown"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
 
 
-            <ImageButton
-                android:src="@drawable/ic_baseline_fast_forward_24px"
-                android:text="@string/pad_subtitlesdelayup"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/but_subtitlesdelayup"
-                android:onClick="buttonClicked"
-                android:layout_weight="1" />
-        </LinearLayout>
+                <ImageButton
+                    android:src="@drawable/ic_baseline_fast_forward_24px"
+                    android:contentDescription="@string/pad_subtitlesdelayup"
+                    android:text="@string/pad_subtitlesdelayup"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_subtitlesdelayup"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/subtltv"
+                android:layout_marginStart="@dimen/lines_text_left"
+                android:background="@color/background"
+                android:text="@string/block_subtl"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"/>
+        </RelativeLayout>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -273,12 +350,14 @@
 
             <ImageButton
                 android:src="@drawable/ic_baseline_info_24px"
+                android:contentDescription="@string/pad_infos"
                 android:text="@string/pad_infos"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:id="@+id/but_infos"
                 android:onClick="buttonClicked"
                 android:layout_weight="1"/>
+
             <RelativeLayout
                 android:layout_width="0dp"
                 android:orientation="horizontal"
@@ -306,6 +385,7 @@
 
             <ImageButton
                 android:src="@drawable/ic_baseline_clear_24px"
+                android:contentDescription="@string/pad_exit"
                 android:text="@string/pad_exit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -327,11 +407,15 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="192.168.0.7:9878"
-                android:textColor="@color/font_color"/>
+                android:inputType="textUri"
+                android:textColor="@color/font_color"
+                android:textSize="@dimen/ip_font"
+                android:paddingStart="@dimen/list_entries_padding"
+                android:paddingEnd="@dimen/list_entries_padding"/>
 
             <ImageButton
                 android:src="@drawable/ic_baseline_save_24px"
+                android:contentDescription="@string/pad_update"
                 android:text="@string/pad_update"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

@@ -8,6 +8,7 @@
     <string name="pad_back30">&lt;</string>
     <string name="pad_fwd30">&gt;</string>
     <string name="pad_fwd600">&gt;&gt;</string>
+    <string name="pad_voloff">Vol On/Off</string>
     <string name="pad_volup">Vol+</string>
     <string name="pad_voldown">Vol-</string>
     <string name="pad_audionext">Audio &gt;</string>
@@ -21,5 +22,8 @@
     <string name="pad_exit">Exit</string>
     <string name="pad_update">Update</string>
     <string name="pad_paste">Paste</string>
+    <string name="block_video">Video</string>
+    <string name="block_audio">Audio</string>
+    <string name="block_subtl">Subtitles</string>
 
 </resources>

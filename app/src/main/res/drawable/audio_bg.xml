@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners
+        android:radius="@dimen/lines_radius"
+        android:topRightRadius="@dimen/lines_radius"
+        android:bottomRightRadius="@dimen/lines_radius"
+        android:bottomLeftRadius="@dimen/lines_radius"/>
+    <stroke
+        android:width="@dimen/lines_width"
+        android:color="@color/audioLine" />
+</shape>

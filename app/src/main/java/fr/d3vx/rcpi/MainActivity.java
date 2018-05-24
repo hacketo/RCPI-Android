@@ -114,6 +114,10 @@ public class MainActivity extends AppCompatActivity{
         films_spinner = new ArrayList<String>();
 
 
+        findViewById(R.id.audiotv).bringToFront();
+        findViewById(R.id.subtltv).bringToFront();
+        findViewById(R.id.videotv).bringToFront();
+
         cmds.put(R.id.but_play, 1);
         cmds.put(R.id.but_back600, 4);
         cmds.put(R.id.but_back30, 5);
