@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">RCPi</string>
+    <string name="pad_reload">Reload</string>
+    <string name="pad_clear">Clear</string>
+    <string name="pad_open">Open</string>
+    <string name="pad_play">Play/Pause</string>
+    <string name="pad_back600">&lt;&lt;</string>
+    <string name="pad_back30">&lt;</string>
+    <string name="pad_fwd30">&gt;</string>
+    <string name="pad_fwd600">&gt;&gt;</string>
+    <string name="pad_volup">Vol+</string>
+    <string name="pad_voldown">Vol-</string>
+    <string name="pad_audionext">Audio &gt;</string>
+    <string name="pad_audioprev">Audio &lt;</string>
+    <string name="pad_subtitles">Subtitles</string>
+    <string name="pad_subtitlesnext">&gt;</string>
+    <string name="pad_subtitlesprev">&lt;</string>
+    <string name="pad_subtitlesdelaydown">-</string>
+    <string name="pad_subtitlesdelayup">+</string>
+    <string name="pad_infos">Infos</string>
+    <string name="pad_exit">Exit</string>
+    <string name="pad_update">Update</string>
+    <string name="pad_paste">Paste</string>
+
+</resources>
