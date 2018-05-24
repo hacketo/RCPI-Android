@@ -75,13 +75,6 @@ public class MainActivity extends AppCompatActivity{
 
     private String filmDurationTxt;
 
-    public String secToHours(int sec){
-        int hours = sec / 3600;
-        int minutes = (sec % 3600) / 60;
-        int seconds = sec % 60;
-        return String.format(Locale.FRANCE, "%02dh%02dm%02ds", hours, minutes, seconds);
-    }
-
     private ClipboardManager clipboardManager;
 
     @Override
@@ -234,7 +227,6 @@ public class MainActivity extends AppCompatActivity{
                 }
                 break;
             case R.id.but_reload:
-                //client.send("{\"key\":\"reload\"}");
                 client.send("reload");
                 break;
             case R.id.paste_but:
@@ -314,12 +306,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
     }
-    private static final float[] NEGATIVE = {
-            -1.0f,     0,     0,    0, 255, // red
-            0, -1.0f,     0,    0, 255, // green
-            0,     0, -1.0f,    0, 255, // blue
-            0,     0,     0, 1.0f,   0  // alpha
-    };
+
 
     @Override
     protected void onDestroy() {
@@ -396,12 +383,24 @@ public class MainActivity extends AppCompatActivity{
                             }
                         }
                     }
-
                 }
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    public String secToHours(int sec){
+        int hours = sec / 3600;
+        int minutes = (sec % 3600) / 60;
+        int seconds = sec % 60;
+        return String.format(Locale.FRANCE, "%02dh%02dm%02ds", hours, minutes, seconds);
+    }
+
+    private static final float[] NEGATIVE = {
+            -1.0f,     0,     0,    0, 255, // red
+            0, -1.0f,     0,    0, 255, // green
+            0,     0, -1.0f,    0, 255, // blue
+            0,     0,     0, 1.0f,   0  // alpha
+    };
 }
