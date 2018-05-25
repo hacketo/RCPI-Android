@@ -75,11 +75,11 @@
 
             <ImageButton
                 android:src="@drawable/ic_baseline_refresh_24px"
-                android:contentDescription="@string/pad_reload"
-                android:text="@string/pad_reload"
+                android:contentDescription="@string/pad_list"
+                android:text="@string/pad_list"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/but_reload"
+                android:id="@+id/but_list"
                 android:onClick="buttonClicked"
                 android:layout_weight="0.5" />
 
@@ -367,7 +367,7 @@
                 android:weightSum="1"
                 android:gravity="center">
                 <ProgressBar
-                    android:id="@+id/filmProgess"
+                    android:id="@+id/mediaProgess"
                     style="@android:style/Widget.ProgressBar.Horizontal"
                     android:layout_width="match_parent"
                     android:layout_centerInParent="true"
@@ -375,7 +375,7 @@
                     android:layout_marginRight="8dp"
                     android:layout_height="40dp"/>
                 <TextView
-                    android:id="@+id/filmProgessText"
+                    android:id="@+id/mediaProgessText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"

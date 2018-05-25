@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Spinner sItems;
     private ArrayAdapter<String> adapter;
-    private ArrayList<String> films_spinner;
+    private ArrayList<String> medias_spinner;
 
     public static String ERROR_ACTION = "error";
     public static String SERVER_MSG_ACTION = "udp";
@@ -59,20 +59,20 @@ public class MainActivity extends AppCompatActivity {
     private EditText edit_ip;
     private EditText edit_url;
 
-    private ArrayList<String> films;
+    private ArrayList<String> medias;
 
-    private int filmDuration;
-    private int filmCursor;
-    private float filmProgress;
-    private boolean isFilmPlaying;
+    private int mediaDuration;
+    private int mediaCursor;
+    private float mediaProgress;
+    private boolean isMediaPlaying;
 
-    private Runnable filmInterval;
-    private Handler filmIntervalHandler;
+    private Runnable mediaInterval;
+    private Handler mediaIntervalHandler;
 
-    private TextView filmProgressText;
+    private TextView mediaProgressText;
     private ProgressBar progressBar;
 
-    private String filmDurationTxt;
+    private String mediaDurationTxt;
 
     private ClipboardManager clipboardManager;
 
@@ -99,10 +99,10 @@ public class MainActivity extends AppCompatActivity {
         temoin = findViewById(R.id.temoin);
         edit_ip = (EditText) findViewById(R.id.edit_ip);
         edit_url = (EditText) findViewById(R.id.edit_url);
-        progressBar = (ProgressBar) findViewById(R.id.filmProgess);
-        filmProgressText = (TextView) findViewById(R.id.filmProgessText);
+        progressBar = (ProgressBar) findViewById(R.id.mediaProgess);
+        mediaProgressText = (TextView) findViewById(R.id.mediaProgessText);
         cmds = new SparseIntArray();
-        films_spinner = new ArrayList<String>();
+        medias_spinner = new ArrayList<String>();
 
 
         findViewById(R.id.audiotv).bringToFront();
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         cmds.put(R.id.but_open, -1);
         cmds.put(R.id.but_update, -1);
         cmds.put(R.id.but_voloff, -1);
-        cmds.put(R.id.but_reload, -1);
+        cmds.put(R.id.but_list, -1);
 
         for (int i = 0; i < cmds.size(); i++) {
             buttonEffect(findViewById(cmds.keyAt(i)));
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         temoin.setBackgroundColor(Color.GREEN);
 
         sItems = (Spinner) findViewById(R.id.spinner);
-        adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, films_spinner);
+        adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, medias_spinner);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sItems.setAdapter(adapter);
 
@@ -154,26 +154,26 @@ public class MainActivity extends AppCompatActivity {
         server = new UDPServer(this, config);
         server.start();
 
-        filmProgress = 0;
-        isFilmPlaying = false;
+        mediaProgress = 0;
+        isMediaPlaying = false;
 
-        filmIntervalHandler = new Handler();
-        filmInterval = new Runnable() {
+        mediaIntervalHandler = new Handler();
+        mediaInterval = new Runnable() {
             public void run() {
-                if (isFilmPlaying) {
-                    filmCursor += 1000;
-                    filmIntervalHandler.postDelayed(this, 1000);
-                    filmProgress = (filmCursor / (float) filmDuration) * 100;
+                if (isMediaPlaying) {
+                    mediaCursor += 1000;
+                    mediaIntervalHandler.postDelayed(this, 1000);
+                    mediaProgress = (mediaCursor / (float) mediaDuration) * 100;
 
-                    if (filmProgress >= 100) {
+                    if (mediaProgress >= 100) {
                         progressBar.setProgress(100);
-                        filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(filmDuration / 1000), filmDurationTxt));
-                        isFilmPlaying = false;
+                        mediaProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(mediaDuration / 1000), mediaDurationTxt));
+                        isMediaPlaying = false;
                         return;
                     }
 
-                    filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(filmCursor / 1000), filmDurationTxt));
-                    progressBar.setProgress((int) filmProgress);
+                    mediaProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(mediaCursor / 1000), mediaDurationTxt));
+                    progressBar.setProgress((int) mediaProgress);
                 }
             }
         };
@@ -211,14 +211,14 @@ public class MainActivity extends AppCompatActivity {
                 if (url.length() > 0) {
                     client.send(RCPi.KEYS.OPEN, url);
                 } else {
-                    if (films != null) {
+                    if (medias != null) {
                         int fid = sItems.getSelectedItemPosition();
-                        String film = films.get(fid);
-                        client.send(RCPi.KEYS.OPEN, film);
+                        String media = medias.get(fid);
+                        client.send(RCPi.KEYS.OPEN, media);
                     }
                 }
                 break;
-            case R.id.but_reload:
+            case R.id.but_list:
                 client.send(RCPi.KEYS.LIST);
                 break;
             case R.id.paste_but:
@@ -265,9 +265,9 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "id :" + cmd);
                     client.send(cmd);
                     if (v.getId() == R.id.but_exit) {
-                        isFilmPlaying = false;
-                        filmIntervalHandler.removeCallbacks(filmInterval);
-                        filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", 0, 0));
+                        isMediaPlaying = false;
+                        mediaIntervalHandler.removeCallbacks(mediaInterval);
+                        mediaProgressText.setText(String.format(Locale.FRANCE, "%s / %s", 0, 0));
                         progressBar.setProgress(0);
                     }
                 }
@@ -351,22 +351,22 @@ public class MainActivity extends AppCompatActivity {
             if (action == RCPi.KEYS.LIST) {
 
                 int l = unpacker.unpackArrayHeader();
-                films_spinner.clear();
+                medias_spinner.clear();
                 ArrayList<String> list = new ArrayList<String>();
                 for (int i = 0; i < l; i++) {
                     String s = unpacker.unpackString();
                     String[] f = s.split("/");
-                    films_spinner.add(f[f.length - 1]);
+                    medias_spinner.add(f[f.length - 1]);
                     list.add(s);
                 }
                 adapter.notifyDataSetChanged();
-                films = list;
+                medias = list;
             } else if (action == RCPi.KEYS.FINFOS) {
                 unpacker.unpackArrayHeader();
                 if (!unpacker.hasNext()) {
                     return;
                 }
-                filmCursor = unpacker.unpackInt();
+                mediaCursor = unpacker.unpackInt();
                 if (!unpacker.hasNext()) {
                     return;
                 }
@@ -376,20 +376,20 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                filmDuration = unpacker.unpackInt();
-                filmDurationTxt = secToHours(filmDuration / 1000);
+                mediaDuration = unpacker.unpackInt();
+                mediaDurationTxt = secToHours(mediaDuration / 1000);
 
                 if (isPlaying) {
-                    if (!isFilmPlaying) {
-                        isFilmPlaying = true;
-                        filmIntervalHandler.postDelayed(filmInterval, 1000);
+                    if (!isMediaPlaying) {
+                        isMediaPlaying = true;
+                        mediaIntervalHandler.postDelayed(mediaInterval, 1000);
                     }
                 } else {
-                    if (isFilmPlaying) {
-                        isFilmPlaying = false;
-                        filmIntervalHandler.removeCallbacks(filmInterval);
-                        filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(filmCursor / 1000), filmDurationTxt));
-                        progressBar.setProgress((int) filmProgress);
+                    if (isMediaPlaying) {
+                        isMediaPlaying = false;
+                        mediaIntervalHandler.removeCallbacks(mediaInterval);
+                        mediaProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(mediaCursor / 1000), mediaDurationTxt));
+                        progressBar.setProgress((int) mediaProgress);
                     }
                 }
             }
