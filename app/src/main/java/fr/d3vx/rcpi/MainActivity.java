@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -23,24 +24,22 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.msgpack.core.MessagePack;
+import org.msgpack.core.MessageUnpacker;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import fr.d3vx.rcpi.udp.Config;
 import fr.d3vx.rcpi.udp.UDPClient;
 import fr.d3vx.rcpi.udp.UDPServer;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
-    private Map<Integer, Integer> cmds;
+    private SparseIntArray cmds;
 
     public static String TAG = "MainActivity";
 
@@ -49,8 +48,8 @@ public class MainActivity extends AppCompatActivity{
     private ArrayList<String> films_spinner;
 
     public static String ERROR_ACTION = "error";
-    public static String MESSAGE_ACTION = "nm";
-    public static String MESSAGE_KEY = "data";
+    public static String SERVER_MSG_ACTION = "udp";
+    public static String SERVER_MSG_KEY = "msg";
 
     private UDPServer server;
     private UDPClient client;
@@ -60,7 +59,7 @@ public class MainActivity extends AppCompatActivity{
     private EditText edit_ip;
     private EditText edit_url;
 
-    private JSONArray films;
+    private ArrayList<String> films;
 
     private int filmDuration;
     private int filmCursor;
@@ -86,24 +85,23 @@ public class MainActivity extends AppCompatActivity{
         int port = 9878;
 
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        String prefIp = sharedPref.getString("ip", ip+":"+port);
+        String prefIp = sharedPref.getString("ip", ip + ":" + port);
 
         String[] d = prefIp.split(":");
-        if (d.length == 2){
+        if (d.length == 2) {
             ip = d[0];
             port = Integer.valueOf(d[1]);
         }
 
 
-
         config = Config.getInstance(port, ip);
 
         temoin = findViewById(R.id.temoin);
-        edit_ip = (EditText)findViewById(R.id.edit_ip);
-        edit_url = (EditText)findViewById(R.id.edit_url);
+        edit_ip = (EditText) findViewById(R.id.edit_ip);
+        edit_url = (EditText) findViewById(R.id.edit_url);
         progressBar = (ProgressBar) findViewById(R.id.filmProgess);
         filmProgressText = (TextView) findViewById(R.id.filmProgessText);
-        cmds = new HashMap<Integer, Integer>();
+        cmds = new SparseIntArray();
         films_spinner = new ArrayList<String>();
 
 
@@ -111,22 +109,22 @@ public class MainActivity extends AppCompatActivity{
         findViewById(R.id.subtltv).bringToFront();
         findViewById(R.id.videotv).bringToFront();
 
-        cmds.put(R.id.but_play, 1);
-        cmds.put(R.id.but_back600, 4);
-        cmds.put(R.id.but_back30, 5);
-        cmds.put(R.id.but_fwd30, 6);
-        cmds.put(R.id.but_fwd600, 7);
-        cmds.put(R.id.but_volup, 10);
-        cmds.put(R.id.but_voldown, 11);
-        cmds.put(R.id.but_audionext, 8);
-        cmds.put(R.id.but_audioprev, 9);
-        cmds.put(R.id.but_subtitles, 12);
-        cmds.put(R.id.but_subtitlesnext, 13);
-        cmds.put(R.id.but_subtitlesprev, 14);
-        cmds.put(R.id.but_subtitlesdelaydown, 15);
-        cmds.put(R.id.but_subtitlesdelayup, 16);
-        cmds.put(R.id.but_infos, 17);
-        cmds.put(R.id.but_exit, 18);
+        cmds.put(R.id.but_play, RCPi.KEYS.PLAY);
+        cmds.put(R.id.but_back600, RCPi.KEYS.PLAYBACK_BACKWARD600);
+        cmds.put(R.id.but_back30, RCPi.KEYS.PLAYBACK_BACKWARD30);
+        cmds.put(R.id.but_fwd30, RCPi.KEYS.PLAYBACK_FORWARD30);
+        cmds.put(R.id.but_fwd600, RCPi.KEYS.PLAYBACK_FORWARD600);
+        cmds.put(R.id.but_volup, RCPi.KEYS.AUDIO_VOL_UP);
+        cmds.put(R.id.but_voldown, RCPi.KEYS.AUDIO_VOL_DOWN);
+        cmds.put(R.id.but_audionext, RCPi.KEYS.AUDIO_TRACK_NEXT);
+        cmds.put(R.id.but_audioprev, RCPi.KEYS.AUDIO_TRACK_PREV);
+        cmds.put(R.id.but_subtitles, RCPi.KEYS.SUBTITLE_TOGGLE);
+        cmds.put(R.id.but_subtitlesnext, RCPi.KEYS.SUBTITLE_TRACK_NEXT);
+        cmds.put(R.id.but_subtitlesprev, RCPi.KEYS.SUBTITLE_TRACK_PREV);
+        cmds.put(R.id.but_subtitlesdelaydown, RCPi.KEYS.SUBTITLE_DELAY_DEC);
+        cmds.put(R.id.but_subtitlesdelayup, RCPi.KEYS.SUBTITLE_DELAY_INC);
+        cmds.put(R.id.but_infos, RCPi.KEYS.INFOS);
+        cmds.put(R.id.but_exit, RCPi.KEYS.QUIT);
 
         cmds.put(R.id.but_clear, -1);
         cmds.put(R.id.but_open, -1);
@@ -134,11 +132,11 @@ public class MainActivity extends AppCompatActivity{
         cmds.put(R.id.but_voloff, -1);
         cmds.put(R.id.but_reload, -1);
 
-        for (int bId : cmds.keySet()){
-            buttonEffect(findViewById(bId));
+        for (int i = 0; i < cmds.size(); i++) {
+            buttonEffect(findViewById(cmds.keyAt(i)));
         }
 
-        edit_ip.setText(ip+":"+port);
+        edit_ip.setText(ip + ":" + port);
 
         temoin.setBackgroundColor(Color.GREEN);
 
@@ -149,7 +147,7 @@ public class MainActivity extends AppCompatActivity{
 
 
         registerReceiver(new ErrorReceiver(), new IntentFilter(ERROR_ACTION));
-        registerReceiver(new MessageReceiver(), new IntentFilter(MESSAGE_ACTION));
+        registerReceiver(new MessageReceiver(), new IntentFilter(SERVER_MSG_ACTION));
 
 
         client = new UDPClient(this, config);
@@ -160,31 +158,31 @@ public class MainActivity extends AppCompatActivity{
         isFilmPlaying = false;
 
         filmIntervalHandler = new Handler();
-        filmInterval = new Runnable(){
-            public void run(){
+        filmInterval = new Runnable() {
+            public void run() {
                 if (isFilmPlaying) {
                     filmCursor += 1000;
                     filmIntervalHandler.postDelayed(this, 1000);
-                    filmProgress = (filmCursor / (float)filmDuration) * 100;
+                    filmProgress = (filmCursor / (float) filmDuration) * 100;
 
-                    if (filmProgress >= 100){
+                    if (filmProgress >= 100) {
                         progressBar.setProgress(100);
-                        filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(filmDuration/1000), filmDurationTxt));
+                        filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(filmDuration / 1000), filmDurationTxt));
                         isFilmPlaying = false;
                         return;
                     }
 
-                    filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(filmCursor/1000), filmDurationTxt));
-                    progressBar.setProgress((int)filmProgress);
+                    filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(filmCursor / 1000), filmDurationTxt));
+                    progressBar.setProgress((int) filmProgress);
                 }
             }
         };
 
         // Get clipboard manager object.
         Object clipboardService = getSystemService(CLIPBOARD_SERVICE);
-        clipboardManager = (ClipboardManager)clipboardService;
+        clipboardManager = (ClipboardManager) clipboardService;
 
-        client.send("ping");
+        client.send(RCPi.KEYS.PING);
 
         // Get intent, action and MIME type
         Intent intent = getIntent();
@@ -197,8 +195,8 @@ public class MainActivity extends AppCompatActivity{
                 if (sharedText != null) {
                     // Update UI to reflect text being shared
                     edit_url.setText(sharedText);
-                    if (sharedText.length() > 0){
-                        client.send(String.format("open|%s",sharedText));
+                    if (sharedText.length() > 0) {
+                        client.send(RCPi.KEYS.OPEN, sharedText);
                     }
                 }
             }
@@ -206,47 +204,41 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    public void buttonClicked(View v){
-        switch(v.getId()){
+    public void buttonClicked(View v) {
+        switch (v.getId()) {
             case R.id.but_open:
                 String url = edit_url.getText().toString();
-                if (url.length() > 0){
-                    client.send(String.format("open|%s",url));
-                }
-                else{
-                    if (films != null){
+                if (url.length() > 0) {
+                    client.send(RCPi.KEYS.OPEN, url);
+                } else {
+                    if (films != null) {
                         int fid = sItems.getSelectedItemPosition();
-                        try {
-                            String film = films.getString(fid);
-
-                            client.send(String.format("open|%s",film));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        String film = films.get(fid);
+                        client.send(RCPi.KEYS.OPEN, film);
                     }
                 }
                 break;
             case R.id.but_reload:
-                client.send("reload");
+                client.send(RCPi.KEYS.LIST);
                 break;
             case R.id.paste_but:
                 ClipData clipData = clipboardManager.getPrimaryClip();
                 // Get item count.
                 int itemCount = clipData.getItemCount();
-                if(itemCount > 0){
+                if (itemCount > 0) {
                     ClipData.Item item = clipData.getItemAt(0);
                     edit_url.setText(item.getText().toString());
                 }
                 break;
             case R.id.but_update:
                 String ip = edit_ip.getText().toString();
-                if (ip.length() > 0){
+                if (ip.length() > 0) {
                     try {
                         String[] d = ip.split(":");
-                        if (d.length == 2){
+                        if (d.length == 2) {
                             config.address = InetAddress.getByName(d[0]);
                             int port = Integer.valueOf(d[1]);
-                            if (port > 6000 && port < 12000){
+                            if (port > 6000 && port < 12000) {
                                 SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("ip", ip);
@@ -258,10 +250,10 @@ public class MainActivity extends AppCompatActivity{
                     }
                 }
 
-                client.send("ping");
+                client.send(RCPi.KEYS.PING);
                 break;
             case R.id.but_voloff:
-                Log.d(TAG,"voloff");
+                Log.d(TAG, "voloff");
                 break;
             case R.id.but_clear:
                 edit_url.setText("");
@@ -269,10 +261,10 @@ public class MainActivity extends AppCompatActivity{
 
             default:
                 int cmd = cmds.get(v.getId());
-                if (cmd > -1){
-                    Log.d(TAG,"id :"+cmd);
-                    client.send(String.format(Locale.FRANCE,"$%d",cmd));
-                    if (v.getId() == R.id.but_exit){
+                if (cmd > -1) {
+                    Log.d(TAG, "id :" + cmd);
+                    client.send(cmd);
+                    if (v.getId() == R.id.but_exit) {
                         isFilmPlaying = false;
                         filmIntervalHandler.removeCallbacks(filmInterval);
                         filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", 0, 0));
@@ -281,23 +273,22 @@ public class MainActivity extends AppCompatActivity{
                 }
 
         }
-        Log.d(TAG, "clicked "+v.getId());
+        Log.d(TAG, "clicked " + v.getId());
     }
 
-    public static void buttonEffect(View button){
+    public static void buttonEffect(View button) {
         button.setOnTouchListener(new View.OnTouchListener() {
-
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN: {
                         v.getBackground().setColorFilter(0xFF41A93A, PorterDuff.Mode.SRC_ATOP);
-                        ((ImageButton)v).getDrawable().setColorFilter(new ColorMatrixColorFilter(NEGATIVE));
+                        ((ImageButton) v).getDrawable().setColorFilter(new ColorMatrixColorFilter(NEGATIVE));
                         v.invalidate();
                         break;
                     }
                     case MotionEvent.ACTION_UP: {
                         v.getBackground().clearColorFilter();
-                        ((ImageButton)v).getDrawable().clearColorFilter();
+                        ((ImageButton) v).getDrawable().clearColorFilter();
                         v.invalidate();
                         break;
                     }
@@ -327,70 +318,85 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
             temoin.setBackgroundColor(Color.GREEN);
-
-            String message = intent.getStringExtra(MESSAGE_KEY);
-            Log.d(TAG, "received message : "+message);
-
-            JSONObject jObj = null;
-            try {
-                jObj = new JSONObject(message);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            if (jObj == null){
-                return;
-            }
-
-            try {
-                String action = jObj.getString("action");
-                if ("list".equals(action)) {
-                    JSONArray jArray = jObj.getJSONArray("data");
-                    films_spinner.clear();
-                    for (int i = 0; i < jArray.length(); i++) {
-                        String[] f = jArray.getString(i).split("/");
-                        films_spinner.add(f[f.length - 1]);
-                    }
-                    adapter.notifyDataSetChanged();
-                    films = jArray;
+            if (SERVER_MSG_ACTION.equals(intent.getAction())) {
+                byte[] data = intent.getByteArrayExtra(SERVER_MSG_KEY);
+                if (data == null){
+                    return;
                 }
-                else if ("finfos".equals(action)) {
-                    JSONObject data = jObj.getJSONObject("data");
-
-                    if (data.has("cursor")){
-                        filmCursor = data.getInt("cursor");
-                    }
-                    if (data.has("duration")){
-                        filmDuration = data.getInt("duration");
-                        filmDurationTxt = secToHours(filmDuration/1000);
-                    }
-
-                    if (data.has("action")){
-                        if ("play".equals(data.getString("action"))){
-                            if (!isFilmPlaying) {
-                                isFilmPlaying = true;
-                                filmIntervalHandler.postDelayed(filmInterval, 1000);
-                            }
-                        }
-                        else if ("stop".equals(data.getString("action"))) {
-                            if (isFilmPlaying) {
-                                isFilmPlaying = false;
-                                filmIntervalHandler.removeCallbacks(filmInterval);
-                                filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(filmCursor/1000), filmDurationTxt));
-                                progressBar.setProgress((int)filmProgress);
-                            }
-                        }
-                    }
+                Log.d(TAG, "receiving data ");
+                try {
+                    MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(data);
+                    unpackMsg(unpacker);
+                    unpacker.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
         }
     }
 
-    public String secToHours(int sec){
+    void unpackMsg(MessageUnpacker unpacker) throws IOException {
+        if (unpacker.hasNext()) {
+            int nb = unpacker.unpackArrayHeader();
+            if (nb == 0) {
+                return;
+            }
+            int base = unpacker.unpackInt();
+            if (base != 6) {
+                return;
+            }
+
+            int action = unpacker.unpackInt();
+            if (action == RCPi.KEYS.LIST) {
+
+                int l = unpacker.unpackArrayHeader();
+                films_spinner.clear();
+                ArrayList<String> list = new ArrayList<String>();
+                for (int i = 0; i < l; i++) {
+                    String s = unpacker.unpackString();
+                    String[] f = s.split("/");
+                    films_spinner.add(f[f.length - 1]);
+                    list.add(s);
+                }
+                adapter.notifyDataSetChanged();
+                films = list;
+            } else if (action == RCPi.KEYS.FINFOS) {
+                unpacker.unpackArrayHeader();
+                if (!unpacker.hasNext()) {
+                    return;
+                }
+                filmCursor = unpacker.unpackInt();
+                if (!unpacker.hasNext()) {
+                    return;
+                }
+
+                boolean isPlaying = unpacker.unpackBoolean();
+                if (!unpacker.hasNext()) {
+                    return;
+                }
+
+                filmDuration = unpacker.unpackInt();
+                filmDurationTxt = secToHours(filmDuration / 1000);
+
+                if (isPlaying) {
+                    if (!isFilmPlaying) {
+                        isFilmPlaying = true;
+                        filmIntervalHandler.postDelayed(filmInterval, 1000);
+                    }
+                } else {
+                    if (isFilmPlaying) {
+                        isFilmPlaying = false;
+                        filmIntervalHandler.removeCallbacks(filmInterval);
+                        filmProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(filmCursor / 1000), filmDurationTxt));
+                        progressBar.setProgress((int) filmProgress);
+                    }
+                }
+            }
+        }
+    }
+
+    public String secToHours(int sec) {
         int hours = sec / 3600;
         int minutes = (sec % 3600) / 60;
         int seconds = sec % 60;
@@ -398,9 +404,9 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private static final float[] NEGATIVE = {
-            -1.0f,     0,     0,    0, 255, // red
-            0, -1.0f,     0,    0, 255, // green
-            0,     0, -1.0f,    0, 255, // blue
-            0,     0,     0, 1.0f,   0  // alpha
+            -1.0f, 0, 0, 0, 255, // red
+            0, -1.0f, 0, 0, 255, // green
+            0, 0, -1.0f, 0, 255, // blue
+            0, 0, 0, 1.0f, 0  // alpha
     };
 }

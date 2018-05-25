@@ -4,9 +4,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessagePack;
+
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.ByteBuffer;
 
 import fr.d3vx.rcpi.MainActivity;
 
@@ -26,7 +31,28 @@ public class UDPClient {
         act = new WeakReference<MainActivity>(activity);
     }
 
-    public void send(final String message){
+    public void send(int key){
+        send(key, null);
+    }
+
+    public void send(int key, String data){
+        MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
+
+        try {
+            packer.packArrayHeader(data != null ? 3 : 2);
+            packer.packInt(4);
+            packer.packInt(key);
+            if (data != null){
+                packer.packString(data);
+            }
+            send(packer.toByteArray());
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void send(final byte[] message){
         thread = new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... params){
@@ -37,7 +63,7 @@ public class UDPClient {
                     ds.setReuseAddress(true);
                     ds.setSoTimeout(1000);
                     DatagramPacket dp;
-                    dp = new DatagramPacket(message.getBytes(), message.getBytes().length, cfg.address, cfg.port);
+                    dp = new DatagramPacket(message, message.length, cfg.address, cfg.port);
                     ds.setBroadcast(true);
                     ds.send(dp);
                 }

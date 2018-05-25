@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import org.msgpack.core.MessagePack;
+import org.msgpack.core.MessageUnpacker;
+
 import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.Buffer;
 
 import fr.d3vx.rcpi.MainActivity;
 
@@ -43,14 +47,11 @@ public class UDPServer {
 
                 try{
                     ds = new DatagramSocket(cfg.port);
-
                     while(enabled){
                         ds.receive(dp);
-
                         Intent i = new Intent();
-                        i.setAction(MainActivity.MESSAGE_ACTION);
-                        String s = new String(lMsg, 0, dp.getLength());
-                        i.putExtra(MainActivity.MESSAGE_KEY, s);
+                        i.setAction(MainActivity.SERVER_MSG_ACTION);
+                        i.putExtra(MainActivity.SERVER_MSG_KEY, lMsg);
                         act.get().getApplicationContext().sendBroadcast(i);
                     }
                 }
