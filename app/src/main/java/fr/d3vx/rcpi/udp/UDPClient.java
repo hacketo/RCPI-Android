@@ -69,7 +69,7 @@ public class UDPClient {
                 }
                 catch (Exception e){
                     e.printStackTrace();
-                    act.get().getApplicationContext().sendBroadcast(new Intent(MainActivity.ERROR_ACTION));
+                    broadcast(new Intent(MainActivity.ERROR_ACTION));
                 }
                 finally{
                     if (ds != null){
@@ -83,8 +83,18 @@ public class UDPClient {
             }
         };
 
-        if (Build.VERSION.SDK_INT >= 11) thread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        else thread.execute();
+        if (Build.VERSION.SDK_INT >= 11) {
+            thread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+        else{
+            thread.execute();
+        }
+    }
+
+    private void broadcast(Intent i){
+        if (act.get() != null) {
+            act.get().getApplicationContext().sendBroadcast(i);
+        }
     }
 
     public void close(){

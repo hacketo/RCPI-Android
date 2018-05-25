@@ -20,8 +20,6 @@ import fr.d3vx.rcpi.MainActivity;
 
 public class UDPServer {
 
-    private final static int PORT = 9878;
-
     private boolean enabled;
 
     private AsyncTask<Void, Void, Void> thread;
@@ -52,12 +50,12 @@ public class UDPServer {
                         Intent i = new Intent();
                         i.setAction(MainActivity.SERVER_MSG_ACTION);
                         i.putExtra(MainActivity.SERVER_MSG_KEY, lMsg);
-                        act.get().getApplicationContext().sendBroadcast(i);
+                        broadcast(i);
                     }
                 }
                 catch (Exception e){
                     e.printStackTrace();
-                    act.get().getApplicationContext().sendBroadcast(new Intent(MainActivity.ERROR_ACTION));
+                    broadcast(new Intent(MainActivity.ERROR_ACTION));
                 }
                 finally{
                     if (ds != null){
@@ -69,15 +67,22 @@ public class UDPServer {
             }
         };
 
-        if (Build.VERSION.SDK_INT >= 11) thread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        else thread.execute();
+        if (Build.VERSION.SDK_INT >= 11) {
+            thread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+        else {
+            thread.execute();
+        }
+    }
+
+    private void broadcast(Intent i){
+        if (act.get() != null) {
+            act.get().getApplicationContext().sendBroadcast(i);
+        }
     }
 
     public void close(){
         thread.cancel(true);
     }
-
-
-
 
 }
