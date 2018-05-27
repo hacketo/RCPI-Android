@@ -33,6 +33,10 @@ public class UDPServer {
         act = new WeakReference<MainActivity>(activity);
     }
 
+    public boolean isEnabled(){
+        return enabled;
+    }
+
     public void start(){
         enabled = true;
 
@@ -54,7 +58,7 @@ public class UDPServer {
                     }
                 }
                 catch (Exception e){
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     broadcast(new Intent(MainActivity.ERROR_ACTION));
                 }
                 finally{
@@ -82,7 +86,9 @@ public class UDPServer {
     }
 
     public void close(){
+
         thread.cancel(true);
+        enabled = false;
     }
 
 }

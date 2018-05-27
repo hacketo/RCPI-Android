@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import fr.d3vx.rcpi.udp.Config;
+import fr.d3vx.rcpi.udp.UDP;
 import fr.d3vx.rcpi.udp.UDPClient;
 import fr.d3vx.rcpi.udp.UDPServer;
 
@@ -51,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
     public static String SERVER_MSG_ACTION = "udp";
     public static String SERVER_MSG_KEY = "msg";
 
-    private UDPServer server;
-    private UDPClient client;
+    private UDP udp;
     private Config config;
 
     private View temoin;
@@ -76,10 +76,15 @@ public class MainActivity extends AppCompatActivity {
 
     private ClipboardManager clipboardManager;
 
+    private ErrorReceiver errorReceiver;
+    private MessageReceiver messageReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         String ip = "192.168.0.7";
         int port = 9878;
@@ -93,8 +98,9 @@ public class MainActivity extends AppCompatActivity {
             port = Integer.valueOf(d[1]);
         }
 
-
         config = Config.getInstance(port, ip);
+        udp = UDP.getInstance(this, config);
+
 
         temoin = findViewById(R.id.temoin);
         edit_ip = (EditText) findViewById(R.id.edit_ip);
@@ -145,35 +151,32 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sItems.setAdapter(adapter);
 
-
-        registerReceiver(new ErrorReceiver(), new IntentFilter(ERROR_ACTION));
-        registerReceiver(new MessageReceiver(), new IntentFilter(SERVER_MSG_ACTION));
-
-
-        client = new UDPClient(this, config);
-        server = new UDPServer(this, config);
-        server.start();
+/*
+        if (!UDP.isInstancied()){
+            errorReceiver = new ErrorReceiver();
+            messageReceiver = new MessageReceiver();
+            registerReceiver(new ErrorReceiver(), new IntentFilter(ERROR_ACTION));
+            registerReceiver(new MessageReceiver(), new IntentFilter(SERVER_MSG_ACTION));
+        }
+        */
+        errorReceiver = new ErrorReceiver();
+        messageReceiver = new MessageReceiver();
 
         mediaProgress = 0;
         isMediaPlaying = false;
+
 
         mediaIntervalHandler = new Handler();
         mediaInterval = new Runnable() {
             public void run() {
                 if (isMediaPlaying) {
                     mediaCursor += 1000;
-                    mediaIntervalHandler.postDelayed(this, 1000);
-                    mediaProgress = (mediaCursor / (float) mediaDuration) * 100;
 
-                    if (mediaProgress >= 100) {
-                        progressBar.setProgress(100);
-                        mediaProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(mediaDuration / 1000), mediaDurationTxt));
-                        isMediaPlaying = false;
-                        return;
+                    updateProgress();
+
+                    if (isMediaPlaying) {
+                        mediaIntervalHandler.postDelayed(this, 1000);
                     }
-
-                    mediaProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(mediaCursor / 1000), mediaDurationTxt));
-                    progressBar.setProgress((int) mediaProgress);
                 }
             }
         };
@@ -182,13 +185,12 @@ public class MainActivity extends AppCompatActivity {
         Object clipboardService = getSystemService(CLIPBOARD_SERVICE);
         clipboardManager = (ClipboardManager) clipboardService;
 
-        client.send(RCPi.KEYS.PING);
+
 
         // Get intent, action and MIME type
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
-
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
@@ -196,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                     // Update UI to reflect text being shared
                     edit_url.setText(sharedText);
                     if (sharedText.length() > 0) {
-                        client.send(RCPi.KEYS.OPEN, sharedText);
+                        udp.send(RCPi.KEYS.OPEN, sharedText);
                     }
                 }
             }
@@ -204,22 +206,65 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     *
+     * @param {int} cursor: seconds
+     */
+    void updateCursorText(int cursor){
+        if (cursor >= 0) {
+            mediaProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(cursor / 1000), mediaDurationTxt));
+        }
+        else{
+            mediaProgressText.setText("");
+        }
+    }
+
+    void updateProgress(){
+        mediaProgress = (mediaCursor / (float) mediaDuration) * 100;
+
+        if (mediaProgress >= 100) {
+            mediaProgress = 100;
+            progressBar.setProgress(100);
+            mediaCursor = mediaDuration;
+            isMediaPlaying = false;
+        }
+
+        updateCursorText(mediaCursor);
+        progressBar.setProgress((int) mediaProgress);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(isMediaPlaying){
+            mediaIntervalHandler.postDelayed(mediaInterval, 1000);
+        }
+
+        registerReceiver(errorReceiver, new IntentFilter(ERROR_ACTION));
+        registerReceiver(messageReceiver, new IntentFilter(SERVER_MSG_ACTION));
+
+        udp.start();
+
+        udp.send(RCPi.KEYS.PING);
+    }
+
     public void buttonClicked(View v) {
         switch (v.getId()) {
             case R.id.but_open:
                 String url = edit_url.getText().toString();
                 if (url.length() > 0) {
-                    client.send(RCPi.KEYS.OPEN, url);
+                    udp.send(RCPi.KEYS.OPEN, url);
                 } else {
                     if (medias != null) {
                         int fid = sItems.getSelectedItemPosition();
                         String media = medias.get(fid);
-                        client.send(RCPi.KEYS.OPEN, media);
+                        udp.send(RCPi.KEYS.OPEN, media);
                     }
                 }
                 break;
             case R.id.but_list:
-                client.send(RCPi.KEYS.LIST);
+                udp.send(RCPi.KEYS.LIST);
                 break;
             case R.id.paste_but:
                 ClipData clipData = clipboardManager.getPrimaryClip();
@@ -250,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                client.send(RCPi.KEYS.PING);
+                udp.send(RCPi.KEYS.PING);
                 break;
             case R.id.but_voloff:
                 Log.d(TAG, "voloff");
@@ -263,11 +308,11 @@ public class MainActivity extends AppCompatActivity {
                 int cmd = cmds.get(v.getId());
                 if (cmd > -1) {
                     Log.d(TAG, "id :" + cmd);
-                    client.send(cmd);
+                    udp.send(cmd);
                     if (v.getId() == R.id.but_exit) {
                         isMediaPlaying = false;
                         mediaIntervalHandler.removeCallbacks(mediaInterval);
-                        mediaProgressText.setText(String.format(Locale.FRANCE, "%s / %s", 0, 0));
+                        updateCursorText(-1);
                         progressBar.setProgress(0);
                     }
                 }
@@ -298,12 +343,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        UDP.close();
+        unregisterReceiver(errorReceiver);
+        unregisterReceiver(messageReceiver);
+        mediaIntervalHandler.removeCallbacks(mediaInterval);
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        server.close();
-        client.close();
     }
 
     class ErrorReceiver extends BroadcastReceiver {
@@ -361,23 +412,18 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 medias = list;
             } else if (action == RCPi.KEYS.FINFOS) {
-                unpacker.unpackArrayHeader();
-                if (!unpacker.hasNext()) {
+                int nb_data = unpacker.unpackArrayHeader();
+                if (nb_data == 0) {
                     return;
                 }
+
                 mediaCursor = unpacker.unpackInt();
-                if (!unpacker.hasNext()) {
+                if (nb_data == 1) {
+                    updateProgress();
                     return;
                 }
 
                 boolean isPlaying = unpacker.unpackBoolean();
-                if (!unpacker.hasNext()) {
-                    return;
-                }
-
-                mediaDuration = unpacker.unpackInt();
-                mediaDurationTxt = secToHours(mediaDuration / 1000);
-
                 if (isPlaying) {
                     if (!isMediaPlaying) {
                         isMediaPlaying = true;
@@ -387,10 +433,18 @@ public class MainActivity extends AppCompatActivity {
                     if (isMediaPlaying) {
                         isMediaPlaying = false;
                         mediaIntervalHandler.removeCallbacks(mediaInterval);
-                        mediaProgressText.setText(String.format(Locale.FRANCE, "%s / %s", secToHours(mediaCursor / 1000), mediaDurationTxt));
                         progressBar.setProgress((int) mediaProgress);
                     }
                 }
+
+                if (nb_data == 2) {
+                    updateProgress();
+                    return;
+                }
+
+                mediaDuration = unpacker.unpackInt();
+                mediaDurationTxt = secToHours(mediaDuration / 1000);
+                updateProgress();
             }
         }
     }
