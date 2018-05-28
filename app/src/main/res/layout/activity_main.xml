@@ -21,7 +21,8 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
+            android:layout_gravity="center_vertical"
             android:weightSum="10">
 
             <View
@@ -30,40 +31,41 @@
                 android:layout_height="20dp"
                 android:background="#00ff00"
                 android:layout_weight="0.5"
-                android:layout_marginTop="@dimen/block_lines_top"
+                android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/lines_radius">
             </View>
-
-            <EditText
-                android:id="@+id/edit_url"
+            <TextView
+                android:id="@+id/tv_ip"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="7.5"
-                android:text=""
-                android:inputType="textUri"
-                android:textColor="@color/font_color"/>
+                android:textColor="@color/font_color"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="10dp"
+                android:textSize="@dimen/ip_font"
+                android:text="192.168.0.2:9877"
+                android:layout_weight="6.7"/>
 
             <ImageButton
-                android:text="@string/pad_clear"
-                android:src="@drawable/ic_baseline_cancel_24px"
-                android:contentDescription="@string/pad_clear"
+                android:src="@drawable/ic_baseline_cast_24px"
+                android:contentDescription="@string/pad_update"
+                android:text="@string/pad_update"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/but_clear"
+                android:id="@+id/but_update"
                 android:onClick="buttonClicked"
-                android:layout_weight="1" />
-
+                android:layout_weight="1.4"/>
 
             <ImageButton
-                android:src="@drawable/ic_baseline_link_24px"
-                android:contentDescription="@string/pad_paste"
-                android:text="@string/pad_paste"
+                android:src="@drawable/ic_baseline_settings_20px"
+                android:contentDescription="@string/pad_update"
+                android:text="@string/pad_update"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/paste_but"
+                android:id="@+id/but_prefs"
                 android:onClick="buttonClicked"
-                android:textSize="12sp"
-                android:layout_weight="1" />
+                android:layout_weight="1.4"/>
+
         </LinearLayout>
 
         <LinearLayout
@@ -71,24 +73,70 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:weightSum="5">
+            android:weightSum="10">
+
+            <EditText
+                android:id="@+id/edit_url"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7.2"
+                android:text="https://youtu.be/watch/fdsfgds"
+                android:inputType="textMultiLine"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="5dp"
+                android:textSize="@dimen/list_entries_font"
+                android:textColor="@color/font_color"/>
+
+            <ImageButton
+                android:text="@string/pad_clear"
+                android:src="@drawable/ic_baseline_cancel_24px"
+                android:contentDescription="@string/pad_clear"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/but_clear"
+                android:onClick="buttonClicked"
+                android:layout_weight="1.4" />
+
+
+            <ImageButton
+                android:src="@drawable/ic_baseline_paste_24px"
+                android:contentDescription="@string/pad_paste"
+                android:text="@string/pad_paste"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/paste_but"
+                android:onClick="buttonClicked"
+                android:textSize="12sp"
+                android:layout_weight="1.4" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:weightSum="10">
 
             <ImageButton
                 android:src="@drawable/ic_baseline_refresh_24px"
                 android:contentDescription="@string/pad_list"
                 android:text="@string/pad_list"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:id="@+id/but_list"
                 android:onClick="buttonClicked"
-                android:layout_weight="0.5" />
+                android:layout_weight="1.4" />
 
             <Spinner
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
+                android:layout_weight="7.2"
                 android:id="@+id/spinner"
                 android:textColor="@color/font_color"
+                android:spinnerMode="dropdown"
                 android:textSize="@dimen/list_entries_font"/>
 <!--
             <Button
@@ -103,10 +151,11 @@
                 android:contentDescription="@string/pad_open"
                 android:text="@string/pad_open"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:id="@+id/but_open"
                 android:onClick="buttonClicked"
-                android:layout_weight="0.5" />
+                android:layout_weight="1.4" />
 
         </LinearLayout>
 
@@ -114,7 +163,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1.1">
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -190,7 +239,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1.1">
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -266,7 +315,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1.1">
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -392,36 +441,6 @@
                 android:id="@+id/but_exit"
                 android:onClick="buttonClicked"
                 android:layout_weight="1"/>
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:baselineAligned="false"
-            android:layout_gravity="center_vertical"
-            android:weightSum="1">
-
-            <EditText
-                android:id="@+id/edit_ip"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:inputType="textUri"
-                android:textColor="@color/font_color"
-                android:textSize="@dimen/ip_font"
-                android:paddingStart="@dimen/list_entries_padding"
-                android:paddingEnd="@dimen/list_entries_padding"/>
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_save_24px"
-                android:contentDescription="@string/pad_update"
-                android:text="@string/pad_update"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/but_update"
-                android:onClick="buttonClicked"/>
-
         </LinearLayout>
     </LinearLayout>
 

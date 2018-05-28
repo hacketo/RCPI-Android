@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:title="Raspberry pi IP"
+        android:key="ip"
+        android:summary="Please provide the ip of your raspberry pi"
+        android:inputType="textUri">
+    </EditTextPreference>
+    <EditTextPreference
+        android:title="Server port"
+        android:key="port"
+        android:summary="Please provide the UDP port that RCPI-Server is listening on"
+        android:inputType="number">
+    </EditTextPreference>
+    <CheckBoxPreference
+        android:title="Debug log"
+        android:defaultValue="false"
+        android:summary="This option if selected will output debug information taht can be seen throught adb."
+        android:key="debug" />
+</PreferenceScreen>

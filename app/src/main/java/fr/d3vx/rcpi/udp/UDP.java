@@ -12,19 +12,20 @@ public class UDP {
 
     private UDPServer server;
     private UDPClient client;
+    private Config config;
 
     private static UDP instance = null;
 
     private UDP(MainActivity act, Config config){
         server = new UDPServer(act, config);
         client = new UDPClient(act, config);
+        this.config = config;
     }
 
     public void send(int key){
         client.send(key);
     }
     public void send(int key, String data){client.send(key, data);}
-    public void send(final byte[] message){client.send(message); }
 
     public void start(){
         server.start();
@@ -45,7 +46,9 @@ public class UDP {
     public static void close(){
         if (instance != null){
             instance.cl();
-            Log.d("UDP","closing UDP service");
+            if (instance.config.debug){
+                Log.d("UDP","closing UDP service");
+            }
         }
     }
 

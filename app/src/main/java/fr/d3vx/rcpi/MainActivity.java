@@ -6,7 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
@@ -28,15 +27,12 @@ import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Locale;
 
 import fr.d3vx.rcpi.udp.Config;
 import fr.d3vx.rcpi.udp.UDP;
-import fr.d3vx.rcpi.udp.UDPClient;
-import fr.d3vx.rcpi.udp.UDPServer;
+import fr.d3vx.rcpi.view.SpinnerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private Config config;
 
     private View temoin;
-    private EditText edit_ip;
+    private TextView tv_ip;
     private EditText edit_url;
 
     private ArrayList<String> medias;
@@ -84,32 +80,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-        String ip = "192.168.0.7";
-        int port = 9878;
-
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        String prefIp = sharedPref.getString("ip", ip + ":" + port);
-
-        String[] d = prefIp.split(":");
-        if (d.length == 2) {
-            ip = d[0];
-            port = Integer.valueOf(d[1]);
-        }
-
-        config = Config.getInstance(port, ip);
+        config = Config.getInstance(this, false);
         udp = UDP.getInstance(this, config);
 
-
         temoin = findViewById(R.id.temoin);
-        edit_ip = (EditText) findViewById(R.id.edit_ip);
+        tv_ip = (TextView) findViewById(R.id.tv_ip);
         edit_url = (EditText) findViewById(R.id.edit_url);
         progressBar = (ProgressBar) findViewById(R.id.mediaProgess);
         mediaProgressText = (TextView) findViewById(R.id.mediaProgessText);
         cmds = new SparseIntArray();
         medias_spinner = new ArrayList<String>();
-
 
         findViewById(R.id.audiotv).bringToFront();
         findViewById(R.id.subtltv).bringToFront();
@@ -142,12 +122,12 @@ public class MainActivity extends AppCompatActivity {
             buttonEffect(findViewById(cmds.keyAt(i)));
         }
 
-        edit_ip.setText(ip + ":" + port);
+        //edit_ip.setText(ip + ":" + port);
 
         temoin.setBackgroundColor(Color.GREEN);
 
         sItems = (Spinner) findViewById(R.id.spinner);
-        adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, medias_spinner);
+        adapter = new SpinnerAdapter(MainActivity.this, R.layout.spinner_item, medias_spinner);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sItems.setAdapter(adapter);
 
@@ -184,8 +164,6 @@ public class MainActivity extends AppCompatActivity {
         // Get clipboard manager object.
         Object clipboardService = getSystemService(CLIPBOARD_SERVICE);
         clipboardManager = (ClipboardManager) clipboardService;
-
-
 
         // Get intent, action and MIME type
         Intent intent = getIntent();
@@ -233,9 +211,26 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setProgress((int) mediaProgress);
     }
 
+    void log(String tag, String msg){
+        if (config.debug){
+            Log.d(tag,msg);
+        }
+    }
+    void logW(String tag, String msg){
+        if (config.debug){
+            Log.d(tag,msg);
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+
+        log(TAG,"UDP start");
+
+        config = Config.getInstance(this, true);
+        tv_ip.setText(config.uri);
+
 
         if(isMediaPlaying){
             mediaIntervalHandler.postDelayed(mediaInterval, 1000);
@@ -276,29 +271,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.but_update:
-                String ip = edit_ip.getText().toString();
-                if (ip.length() > 0) {
-                    try {
-                        String[] d = ip.split(":");
-                        if (d.length == 2) {
-                            config.address = InetAddress.getByName(d[0]);
-                            int port = Integer.valueOf(d[1]);
-                            if (port > 6000 && port < 12000) {
-                                SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("ip", ip);
-                                editor.apply();
-                            }
-                        }
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
-                    }
-                }
-
                 udp.send(RCPi.KEYS.PING);
                 break;
+            case R.id.but_prefs:
+                Intent i = new Intent(this, PrefsActivity.class);
+                startActivity(i);
+                break;
             case R.id.but_voloff:
-                Log.d(TAG, "voloff");
+                log(TAG, "voloff");
                 break;
             case R.id.but_clear:
                 edit_url.setText("");
@@ -307,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
             default:
                 int cmd = cmds.get(v.getId());
                 if (cmd > -1) {
-                    Log.d(TAG, "id :" + cmd);
+                    log(TAG, "id :" + cmd);
                     udp.send(cmd);
                     if (v.getId() == R.id.but_exit) {
                         isMediaPlaying = false;
@@ -318,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
         }
-        Log.d(TAG, "clicked " + v.getId());
+        log(TAG, "clicked " + v.getId());
     }
 
     public static void buttonEffect(View button) {
@@ -374,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                 if (data == null){
                     return;
                 }
-                Log.d(TAG, "receiving data ");
+
                 try {
                     MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(data);
                     unpackMsg(unpacker);
@@ -390,34 +370,40 @@ public class MainActivity extends AppCompatActivity {
         if (unpacker.hasNext()) {
             int nb = unpacker.unpackArrayHeader();
             if (nb == 0) {
+                logW("unpackMsg", "weird, cant get ArrayData from packet");
                 return;
             }
             int base = unpacker.unpackInt();
             if (base != 6) {
+                logW("unpackMsg", "weird, first packet entrie should be 6");
                 return;
             }
 
             int action = unpacker.unpackInt();
             if (action == RCPi.KEYS.LIST) {
-
                 int l = unpacker.unpackArrayHeader();
                 medias_spinner.clear();
                 ArrayList<String> list = new ArrayList<String>();
+                String d = "";
                 for (int i = 0; i < l; i++) {
                     String s = unpacker.unpackString();
                     String[] f = s.split("/");
                     medias_spinner.add(f[f.length - 1]);
                     list.add(s);
+                    d = d+s+(i < l-1 ? ", " : "");
                 }
+                log("unpackMsg", "got a list of films"+d);
                 adapter.notifyDataSetChanged();
                 medias = list;
             } else if (action == RCPi.KEYS.FINFOS) {
                 int nb_data = unpacker.unpackArrayHeader();
                 if (nb_data == 0) {
+                    logW("unpackMsg", "Finfos no data ?");
                     return;
                 }
 
                 mediaCursor = unpacker.unpackInt();
+                log("unpackMsg", "Finfos : CURSOR :"+mediaCursor);
                 if (nb_data == 1) {
                     updateProgress();
                     return;
@@ -436,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
                         progressBar.setProgress((int) mediaProgress);
                     }
                 }
-
+                log("unpackMsg", "Finfos : MEDIA_PLAYING :"+isPlaying);
                 if (nb_data == 2) {
                     updateProgress();
                     return;
@@ -444,6 +430,7 @@ public class MainActivity extends AppCompatActivity {
 
                 mediaDuration = unpacker.unpackInt();
                 mediaDurationTxt = secToHours(mediaDuration / 1000);
+                log("unpackMsg", "Finfos : MEDIA_DURATION :"+mediaDuration);
                 updateProgress();
             }
         }

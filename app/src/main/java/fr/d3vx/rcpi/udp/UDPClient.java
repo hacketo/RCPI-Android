@@ -3,6 +3,7 @@ package fr.d3vx.rcpi.udp;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.util.Log;
 
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
@@ -38,6 +39,10 @@ public class UDPClient {
     public void send(int key, String data){
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
+        if (cfg.debug){
+            Log.d("UDPClient", "Sending key:"+key+" ; "+data);
+        }
+
         try {
             packer.packArrayHeader(data != null ? 3 : 2);
             packer.packInt(4);
@@ -52,7 +57,7 @@ public class UDPClient {
         }
     }
 
-    public void send(final byte[] message){
+    private void send(final byte[] message){
         thread = new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... params){
