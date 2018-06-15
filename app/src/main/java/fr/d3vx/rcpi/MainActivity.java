@@ -165,8 +165,20 @@ public class MainActivity extends AppCompatActivity {
         Object clipboardService = getSystemService(CLIPBOARD_SERVICE);
         clipboardManager = (ClipboardManager) clipboardService;
 
+        checkIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        log(TAG,"new intent");
+        checkIntent(intent);
+    }
+
+
+    private void checkIntent(Intent intent){
         // Get intent, action and MIME type
-        Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
         if (Intent.ACTION_SEND.equals(action) && type != null) {

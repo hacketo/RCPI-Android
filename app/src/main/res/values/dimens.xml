@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">6dp</dimen>
     <dimen name="lines_radius">4dp</dimen>
     <dimen name="lines_width">2dp</dimen>
-    <dimen name="block_lines_top">18dp</dimen>
+    <dimen name="block_lines_top">14dp</dimen>
     <dimen name="block_bottom">5dp</dimen>
     <dimen name="lines_text_left">15dp</dimen>
     <dimen name="list_entries_padding">12sp</dimen>
