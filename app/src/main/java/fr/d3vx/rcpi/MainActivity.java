@@ -164,8 +164,6 @@ public class MainActivity extends AppCompatActivity {
         // Get clipboard manager object.
         Object clipboardService = getSystemService(CLIPBOARD_SERVICE);
         clipboardManager = (ClipboardManager) clipboardService;
-
-        checkIntent(getIntent());
     }
 
     @Override
@@ -243,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
         config = Config.getInstance(this, true);
         tv_ip.setText(config.uri);
 
+        checkIntent(getIntent());
 
         if(isMediaPlaying){
             mediaIntervalHandler.postDelayed(mediaInterval, 1000);
