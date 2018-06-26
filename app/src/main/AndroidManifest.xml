@@ -27,10 +27,10 @@
 
         <activity android:name="fr.d3vx.rcpi.PrefsActivity"
             android:screenOrientation="nosensor">
-            <intent-filer>
+            <intent-filter>
                 <action android:name=".Preferences" />
                 <category android:name="android.intent.category.PREFERENCE" />
-            </intent-filer>
+            </intent-filter>
         </activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET" />

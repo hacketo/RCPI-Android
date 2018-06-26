@@ -3,18 +3,18 @@
     <EditTextPreference
         android:title="Raspberry pi IP"
         android:key="ip"
-        android:summary="Please provide the ip of your raspberry pi"
+        android:summary="@string/pref_ip"
         android:inputType="textUri">
     </EditTextPreference>
     <EditTextPreference
         android:title="Server port"
         android:key="port"
-        android:summary="Please provide the UDP port that RCPI-Server is listening on"
+        android:summary="@string/pref_port"
         android:inputType="number">
     </EditTextPreference>
     <CheckBoxPreference
         android:title="Debug log"
         android:defaultValue="false"
-        android:summary="This option if selected will output debug information taht can be seen throught adb."
+        android:summary="@string/pref_debug"
         android:key="debug" />
 </PreferenceScreen>

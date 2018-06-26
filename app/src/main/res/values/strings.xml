@@ -25,5 +25,8 @@
     <string name="block_video">Video</string>
     <string name="block_audio">Audio</string>
     <string name="block_subtl">Subtitles</string>
-
+    
+    <string name="pref_ip">Please provide the ip of your raspberry pi</string>
+    <string name="pref_port">Please provide the UDP port that RCPI-Server is listening on</string>
+    <string name="pref_debug">This option if selected will output debug information that can be seen through adb</string>
 </resources>
