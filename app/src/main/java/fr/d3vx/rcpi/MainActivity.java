@@ -122,8 +122,6 @@ public class MainActivity extends AppCompatActivity {
             buttonEffect(findViewById(cmds.keyAt(i)));
         }
 
-        //edit_ip.setText(ip + ":" + port);
-
         temoin.setBackgroundColor(Color.GREEN);
 
         sItems = (Spinner) findViewById(R.id.spinner);
@@ -131,20 +129,11 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sItems.setAdapter(adapter);
 
-/*
-        if (!UDP.isInstancied()){
-            errorReceiver = new ErrorReceiver();
-            messageReceiver = new MessageReceiver();
-            registerReceiver(new ErrorReceiver(), new IntentFilter(ERROR_ACTION));
-            registerReceiver(new MessageReceiver(), new IntentFilter(SERVER_MSG_ACTION));
-        }
-        */
         errorReceiver = new ErrorReceiver();
         messageReceiver = new MessageReceiver();
 
         mediaProgress = 0;
         isMediaPlaying = false;
-
 
         mediaIntervalHandler = new Handler();
         mediaInterval = new Runnable() {
@@ -164,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
         // Get clipboard manager object.
         Object clipboardService = getSystemService(CLIPBOARD_SERVICE);
         clipboardManager = (ClipboardManager) clipboardService;
+
+        checkIntent(getIntent());
     }
 
     @Override
@@ -174,7 +165,34 @@ public class MainActivity extends AppCompatActivity {
         checkIntent(intent);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        log(TAG,"UDP start");
+        config = Config.getInstance(this, true);
+        tv_ip.setText(config.uri);
+        //checkIntent(getIntent());
+        if(isMediaPlaying){
+            mediaIntervalHandler.postDelayed(mediaInterval, 1000);
+        }
+        registerReceiver(errorReceiver, new IntentFilter(ERROR_ACTION));
+        registerReceiver(messageReceiver, new IntentFilter(SERVER_MSG_ACTION));
+        udp.start();
+        udp.send(RCPi.KEYS.PING);
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        UDP.close();
+        unregisterReceiver(errorReceiver);
+        unregisterReceiver(messageReceiver);
+        mediaIntervalHandler.removeCallbacks(mediaInterval);
+    }
+
+    /**
+     * Check if we have any text data incoming from the intent
+     */
     private void checkIntent(Intent intent){
         // Get intent, action and MIME type
         String action = intent.getAction();
@@ -207,19 +225,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Update media progess view
     void updateProgress(){
         mediaProgress = (mediaCursor / (float) mediaDuration) * 100;
-
         if (mediaProgress >= 100) {
             mediaProgress = 100;
             progressBar.setProgress(100);
             mediaCursor = mediaDuration;
             isMediaPlaying = false;
         }
-
         updateCursorText(mediaCursor);
         progressBar.setProgress((int) mediaProgress);
     }
+
 
     void log(String tag, String msg){
         if (config.debug){
@@ -232,28 +250,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
 
-        log(TAG,"UDP start");
-
-        config = Config.getInstance(this, true);
-        tv_ip.setText(config.uri);
-
-        checkIntent(getIntent());
-
-        if(isMediaPlaying){
-            mediaIntervalHandler.postDelayed(mediaInterval, 1000);
-        }
-
-        registerReceiver(errorReceiver, new IntentFilter(ERROR_ACTION));
-        registerReceiver(messageReceiver, new IntentFilter(SERVER_MSG_ACTION));
-
-        udp.start();
-
-        udp.send(RCPi.KEYS.PING);
-    }
 
     public void buttonClicked(View v) {
         switch (v.getId()) {
@@ -312,6 +309,10 @@ public class MainActivity extends AppCompatActivity {
         log(TAG, "clicked " + v.getId());
     }
 
+    /**
+     * Visual effects for the buttons
+     * @param button
+     */
     public static void buttonEffect(View button) {
         button.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -334,19 +335,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        UDP.close();
-        unregisterReceiver(errorReceiver);
-        unregisterReceiver(messageReceiver);
-        mediaIntervalHandler.removeCallbacks(mediaInterval);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 
     class ErrorReceiver extends BroadcastReceiver {
         @Override
