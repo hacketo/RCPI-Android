@@ -153,16 +153,6 @@ public class MainActivity extends AppCompatActivity {
         // Get clipboard manager object.
         Object clipboardService = getSystemService(CLIPBOARD_SERVICE);
         clipboardManager = (ClipboardManager) clipboardService;
-
-        checkIntent(getIntent());
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        log(TAG,"new intent");
-        checkIntent(intent);
     }
 
     @Override
@@ -179,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(messageReceiver, new IntentFilter(SERVER_MSG_ACTION));
         udp.start();
         udp.send(RCPi.KEYS.PING);
+
+        checkIntent(getIntent());
     }
 
     @Override
@@ -206,6 +198,8 @@ public class MainActivity extends AppCompatActivity {
                     if (sharedText.length() > 0) {
                         udp.send(RCPi.KEYS.OPEN, sharedText);
                     }
+
+                    intent.removeExtra(Intent.EXTRA_TEXT);
                 }
             }
 
@@ -286,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
                 break;
             case R.id.but_voloff:
-                log(TAG, "voloff");
+                log(TAG, "voloff not implemented yet");
                 break;
             case R.id.but_clear:
                 edit_url.setText("");
@@ -343,8 +337,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class MessageReceiver extends BroadcastReceiver {
 
+    class MessageReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             temoin.setBackgroundColor(Color.GREEN);
@@ -365,6 +359,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Unpack message using msgpack and display data
+     */
     void unpackMsg(MessageUnpacker unpacker) throws IOException {
         if (unpacker.hasNext()) {
             int nb = unpacker.unpackArrayHeader();
@@ -374,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
             }
             int base = unpacker.unpackInt();
             if (base != 6) {
-                logW("unpackMsg", "weird, first packet entrie should be 6");
+                logW("unpackMsg", "weird, first packet entry should be 6");
                 return;
             }
 

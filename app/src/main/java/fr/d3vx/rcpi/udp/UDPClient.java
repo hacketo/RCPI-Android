@@ -36,6 +36,11 @@ public class UDPClient {
         send(key, null);
     }
 
+    /**
+     * Pack and send message to the server
+     * @param key
+     * @param data
+     */
     public void send(int key, String data){
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
@@ -57,6 +62,10 @@ public class UDPClient {
         }
     }
 
+    /**
+     * Send message to the server
+     * @param message
+     */
     private void send(final byte[] message){
         thread = new AsyncTask<Void, Void, Void>(){
             @Override
