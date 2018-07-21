@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private int mediaCursor;
     private float mediaProgress;
     private boolean isMediaPlaying;
+    private String currentMediaPath;
+
 
     private Runnable mediaInterval;
     private Handler mediaIntervalHandler;
@@ -427,6 +429,23 @@ public class MainActivity extends AppCompatActivity {
                 mediaDuration = unpacker.unpackInt();
                 mediaDurationTxt = secToHours(mediaDuration / 1000);
                 log("unpackMsg", "Finfos : MEDIA_DURATION :"+mediaDuration);
+
+                if (nb_data == 3) {
+                    updateProgress();
+                    return;
+                }
+
+
+                currentMediaPath = unpacker.unpackString();
+                log("unpackMsg", "Finfos : MEDIA_PATH :"+currentMediaPath);
+                if (currentMediaPath.length() > 0) {
+                    if (currentMediaPath.startsWith("/")) {
+                        sItems.setSelection(this.medias.indexOf(currentMediaPath));
+                    } else {
+                        edit_url.setText(currentMediaPath);
+                    }
+                }
+
                 updateProgress();
             }
         }

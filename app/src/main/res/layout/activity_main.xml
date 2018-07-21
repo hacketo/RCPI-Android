@@ -260,22 +260,22 @@
                     android:layout_weight="1" />
 
                 <ImageButton
-                    android:src="@drawable/ic_baseline_volume_up_24px"
-                    android:contentDescription="@string/pad_volup"
-                    android:text="@string/pad_volup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/but_volup"
-                    android:onClick="buttonClicked"
-                    android:layout_weight="1" />
-
-                <ImageButton
                     android:src="@drawable/ic_baseline_volume_down_24px"
                     android:contentDescription="@string/pad_voldown"
                     android:text="@string/pad_voldown"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/but_voldown"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:src="@drawable/ic_baseline_volume_up_24px"
+                    android:contentDescription="@string/pad_volup"
+                    android:text="@string/pad_volup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/but_volup"
                     android:onClick="buttonClicked"
                     android:layout_weight="1" />
 
