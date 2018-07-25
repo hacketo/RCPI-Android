@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         mediaProgressText = (TextView) findViewById(R.id.mediaProgessText);
         cmds = new SparseIntArray();
         medias_spinner = new ArrayList<String>();
+        medias = new ArrayList<String>();
 
         findViewById(R.id.audiotv).bringToFront();
         findViewById(R.id.subtltv).bringToFront();
@@ -252,9 +253,13 @@ public class MainActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.but_open:
                 String url = edit_url.getText().toString();
+                // First check url,
+                // Then if no url present process media list
+                //@FIXME
                 if (url.length() > 0) {
                     udp.send(RCPi.KEYS.OPEN, url);
-                } else {
+                }
+                else {
                     if (medias != null) {
                         int fid = sItems.getSelectedItemPosition();
                         String media = medias.get(fid);
@@ -267,7 +272,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.paste_but:
                 ClipData clipData = clipboardManager.getPrimaryClip();
-                // Get item count.
                 int itemCount = clipData.getItemCount();
                 if (itemCount > 0) {
                     ClipData.Item item = clipData.getItemAt(0);
@@ -354,7 +358,8 @@ public class MainActivity extends AppCompatActivity {
                     MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(data);
                     unpackMsg(unpacker);
                     unpacker.close();
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -385,15 +390,15 @@ public class MainActivity extends AppCompatActivity {
                 String d = "";
                 for (int i = 0; i < l; i++) {
                     String s = unpacker.unpackString();
-                    String[] f = s.split("/");
-                    medias_spinner.add(f[f.length - 1]);
+                    medias_spinner.add(getMediaName(s));
                     list.add(s);
-                    d = d+s+(i < l-1 ? ", " : "");
+                    d = d + s + (i < l-1 ? ", " : "");
                 }
                 log("unpackMsg", "got a list of films"+d);
                 adapter.notifyDataSetChanged();
                 medias = list;
-            } else if (action == RCPi.KEYS.FINFOS) {
+            }
+            else if (action == RCPi.KEYS.FINFOS) {
                 int nb_data = unpacker.unpackArrayHeader();
                 if (nb_data == 0) {
                     logW("unpackMsg", "Finfos no data ?");
@@ -413,7 +418,8 @@ public class MainActivity extends AppCompatActivity {
                         isMediaPlaying = true;
                         mediaIntervalHandler.postDelayed(mediaInterval, 1000);
                     }
-                } else {
+                }
+                else {
                     if (isMediaPlaying) {
                         isMediaPlaying = false;
                         mediaIntervalHandler.removeCallbacks(mediaInterval);
@@ -440,8 +446,16 @@ public class MainActivity extends AppCompatActivity {
                 log("unpackMsg", "Finfos : MEDIA_PATH :"+currentMediaPath);
                 if (currentMediaPath.length() > 0) {
                     if (currentMediaPath.startsWith("/")) {
+                        if (medias.isEmpty()) {
+                            medias_spinner.clear();
+                            medias_spinner.add(getMediaName(currentMediaPath));
+                            medias.add(currentMediaPath);
+                            adapter.notifyDataSetChanged();
+                        }
+
                         sItems.setSelection(this.medias.indexOf(currentMediaPath));
-                    } else {
+                    }
+                    else {
                         edit_url.setText(currentMediaPath);
                     }
                 }
@@ -449,6 +463,11 @@ public class MainActivity extends AppCompatActivity {
                 updateProgress();
             }
         }
+    }
+
+    public String getMediaName(String s ){
+        String[] f = s.split("/");
+        return f[f.length - 1];
     }
 
     public String secToHours(int sec) {

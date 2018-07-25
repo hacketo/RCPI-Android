@@ -80,7 +80,6 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="7.2"
-                android:text="https://youtu.be/watch/fdsfgds"
                 android:inputType="textMultiLine"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="5dp"
