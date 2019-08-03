@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
     private ErrorReceiver errorReceiver;
     private MessageReceiver messageReceiver;
 
+    private boolean subtitlePref = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -231,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
             mediaCursor = mediaDuration;
             isMediaPlaying = false;
         }
+        colorButton(findViewById(R.id.but_subtitles), this.subtitlePref);
         updateCursorText(mediaCursor);
         progressBar.setProgress((int) mediaProgress);
     }
@@ -247,8 +250,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
     public void buttonClicked(View v) {
         switch (v.getId()) {
             case R.id.but_open:
@@ -257,13 +258,13 @@ public class MainActivity extends AppCompatActivity {
                 // Then if no url present process media list
                 //@FIXME
                 if (url.length() > 0) {
-                    udp.send(RCPi.KEYS.OPEN, url);
+                    udp.send(RCPi.KEYS.OPEN, url, subtitlePref ? 1 : 0);
                 }
                 else {
                     if (medias != null) {
                         int fid = sItems.getSelectedItemPosition();
                         String media = medias.get(fid);
-                        udp.send(RCPi.KEYS.OPEN, media);
+                        udp.send(RCPi.KEYS.OPEN, media, subtitlePref ? 1 : 0);
                     }
                 }
                 break;
@@ -313,26 +314,41 @@ public class MainActivity extends AppCompatActivity {
      * Visual effects for the buttons
      * @param button
      */
-    public static void buttonEffect(View button) {
+    public void buttonEffect(View button) {
         button.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN: {
-                        v.getBackground().setColorFilter(0xFF41A93A, PorterDuff.Mode.SRC_ATOP);
-                        ((ImageButton) v).getDrawable().setColorFilter(new ColorMatrixColorFilter(NEGATIVE));
-                        v.invalidate();
+                        colorButton(v, true);
                         break;
                     }
                     case MotionEvent.ACTION_UP: {
-                        v.getBackground().clearColorFilter();
-                        ((ImageButton) v).getDrawable().clearColorFilter();
-                        v.invalidate();
+                        if (v.getId() == R.id.but_subtitles){
+                            subtitlePref = !subtitlePref;
+                            if (subtitlePref){
+                                break;
+                            }
+                        }
+                        colorButton(v, false);
                         break;
                     }
                 }
                 return false;
             }
         });
+    }
+
+    public void colorButton(View v, boolean applyColor){
+        if (applyColor) {
+            v.getBackground().setColorFilter(0xFF41A93A, PorterDuff.Mode.SRC_ATOP);
+            ((ImageButton) v).getDrawable().setColorFilter(new ColorMatrixColorFilter(NEGATIVE));
+            v.invalidate();
+        }
+        else{
+            v.getBackground().clearColorFilter();
+            ((ImageButton) v).getDrawable().clearColorFilter();
+            v.invalidate();
+        }
     }
 
 
@@ -460,6 +476,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                if (nb_data == 4) {
+                    updateProgress();
+                    return;
+                }
+
+                subtitlePref = unpacker.unpackBoolean();
+                log("unpackMsg", "Finfos : SUBTITLES :"+subtitlePref);
                 updateProgress();
             }
         }

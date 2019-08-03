@@ -25,7 +25,12 @@ public class UDP {
     public void send(int key){
         client.send(key);
     }
-    public void send(int key, String data){client.send(key, data);}
+    public void send(int key, String data){
+        client.send(key, data);
+    }
+    public void send(int key, String data, int code){
+        client.send(key, data, code);
+    }
 
     public void start(){
         server.start();
