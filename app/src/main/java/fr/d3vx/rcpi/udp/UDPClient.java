@@ -58,7 +58,14 @@ public class UDPClient {
         }
 
         try {
-            packer.packArrayHeader(data != null ? 3 : 2);
+            int nb = 2;
+            if(data != null){
+                nb++;
+            }
+            if (code != -1){
+                nb++;
+            }
+            packer.packArrayHeader(nb);
             packer.packInt(4);
             packer.packInt(key);
             if (data != null){
