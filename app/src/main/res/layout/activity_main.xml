@@ -49,6 +49,7 @@
             <ImageButton
                 android:src="@drawable/ic_baseline_cast_24px"
                 android:contentDescription="@string/pad_update"
+                android:background="@drawable/but_shape"
                 android:text="@string/pad_update"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -59,6 +60,7 @@
             <ImageButton
                 android:src="@drawable/ic_baseline_settings_20px"
                 android:contentDescription="@string/pad_update"
+                android:background="@drawable/but_shape"
                 android:text="@string/pad_update"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -79,36 +81,44 @@
                 android:id="@+id/edit_url"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="7.2"
+                android:layout_weight="8.6"
                 android:inputType="textMultiLine"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="5dp"
                 android:textSize="@dimen/list_entries_font"
                 android:textColor="@color/font_color"/>
-
-            <ImageButton
-                android:text="@string/pad_clear"
-                android:src="@drawable/ic_baseline_cancel_24px"
-                android:contentDescription="@string/pad_clear"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:id="@+id/but_clear"
-                android:onClick="buttonClicked"
-                android:layout_weight="1.4" />
+                android:layout_height="match_parent"
+                android:layout_weight="1.4"
+                android:gravity="center_vertical"
+                android:weightSum="2">
+                <ImageButton
+                    android:text="@string/pad_clear"
+                    android:src="@drawable/ic_baseline_cancel_24px"
+                    android:contentDescription="@string/pad_clear"
+                    android:background="@drawable/but_shape"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/but_clear"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="1" />
 
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_paste_24px"
-                android:contentDescription="@string/pad_paste"
-                android:text="@string/pad_paste"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:id="@+id/paste_but"
-                android:onClick="buttonClicked"
-                android:textSize="12sp"
-                android:layout_weight="1.4" />
+                <ImageButton
+                    android:src="@drawable/ic_baseline_paste_24px"
+                    android:contentDescription="@string/pad_paste"
+                    android:background="@drawable/but_shape"
+                    android:text="@string/pad_paste"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/paste_but"
+                    android:onClick="buttonClicked"
+                    android:textSize="12sp"
+                    android:layout_weight="1" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -121,8 +131,10 @@
             <ImageButton
                 android:src="@drawable/ic_baseline_refresh_24px"
                 android:contentDescription="@string/pad_list"
+                android:background="@drawable/but_shape"
                 android:text="@string/pad_list"
                 android:layout_width="0dp"
+                android:minHeight="65dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/but_list"
@@ -144,18 +156,37 @@
                 android:id="@+id/reset"
                 android:onClick="buttonClicked"
                 android:layout_weight="0.25" />-->
-
-            <ImageButton
-                android:src="@drawable/ic_baseline_open_in_browser_24px"
-                android:contentDescription="@string/pad_open"
-                android:text="@string/pad_open"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:id="@+id/but_open"
-                android:onClick="buttonClicked"
-                android:layout_weight="1.4" />
+                android:layout_height="match_parent"
+                android:layout_weight="1.4"
+                android:weightSum="10">
+                <ImageButton
+                    android:src="@drawable/ic_baseline_open_in_browser_24px"
+                    android:contentDescription="@string/pad_open"
+                    android:background="@drawable/but_shape"
+                    android:text="@string/pad_open"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/but_open"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="5" />
 
+                <ImageButton
+                    android:src="@drawable/ic_baseline_download_24px"
+                    android:contentDescription="@string/pad_open"
+                    android:background="@drawable/but_shape"
+                    android:text="@string/pad_open"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/but_download"
+                    android:onClick="buttonClicked"
+                    android:layout_weight="5" />
+
+            </LinearLayout>
         </LinearLayout>
 
 
@@ -176,6 +207,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_play_pause_48px"
                     android:contentDescription="@string/pad_play"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_play"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -186,6 +218,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_fast_rewind_24px"
                     android:contentDescription="@string/pad_back600"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_back600"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -196,6 +229,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_rewind_24px"
                     android:contentDescription="@string/pad_back30"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_back30"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -206,6 +240,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_forward_24px"
                     android:contentDescription="@string/pad_fwd30"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_fwd30"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -216,6 +251,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_fast_forward_24px"
                     android:contentDescription="@string/pad_fwd600"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_fwd600"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -250,6 +286,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_volume_off_24px"
                     android:contentDescription="@string/pad_voloff"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_voloff"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -261,6 +298,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_volume_down_24px"
                     android:contentDescription="@string/pad_voldown"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_voldown"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -271,6 +309,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_volume_up_24px"
                     android:contentDescription="@string/pad_volup"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_volup"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -281,6 +320,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_skip_next_24px"
                     android:contentDescription="@string/pad_audionext"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_audionext"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -291,6 +331,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_skip_previous_24px"
                     android:contentDescription="@string/pad_audioprev"
+                    android:background="@drawable/but_shape"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/but_audioprev"
@@ -327,6 +368,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_subtitles_24px"
                     android:contentDescription="@string/pad_subtitles"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_subtitles"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -337,6 +379,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_skip_next_24px"
                     android:contentDescription="@string/pad_subtitlesnext"
+                    android:background="@drawable/but_shape"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:id="@+id/but_subtitlesnext"
@@ -347,6 +390,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_skip_previous_24px"
                     android:contentDescription="@string/pad_subtitlesprev"
+                    android:background="@drawable/but_shape"
                     android:layout_width="0dp"
                     android:text="@string/pad_subtitlesprev"
                     android:layout_height="match_parent"
@@ -358,6 +402,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_fast_rewind_24px"
                     android:contentDescription="@string/pad_subtitlesdelaydown"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_subtitlesdelaydown"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -369,6 +414,7 @@
                 <ImageButton
                     android:src="@drawable/ic_baseline_fast_forward_24px"
                     android:contentDescription="@string/pad_subtitlesdelayup"
+                    android:background="@drawable/but_shape"
                     android:text="@string/pad_subtitlesdelayup"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -399,6 +445,7 @@
             <ImageButton
                 android:src="@drawable/ic_baseline_info_24px"
                 android:contentDescription="@string/pad_infos"
+                android:background="@drawable/but_shape"
                 android:text="@string/pad_infos"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -434,6 +481,7 @@
             <ImageButton
                 android:src="@drawable/ic_baseline_clear_24px"
                 android:contentDescription="@string/pad_exit"
+                android:background="@drawable/but_shape"
                 android:text="@string/pad_exit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

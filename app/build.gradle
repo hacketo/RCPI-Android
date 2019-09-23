@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 29
     buildToolsVersion "28.0.1"
     defaultConfig {
         applicationId "fr.d3vx.rcpi"
-        minSdkVersion 19
-        targetSdkVersion 26
+        minSdkVersion 21
+        targetSdkVersion 29
         versionCode 4
         versionName "0.65"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -25,7 +25,6 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    api 'com.android.support:appcompat-v7:26.0.1'
     api 'org.msgpack:msgpack-core:0.8.16'
     //compile 'com.github.codebutler:android-websockets:master'
     testImplementation 'junit:junit:4.12'

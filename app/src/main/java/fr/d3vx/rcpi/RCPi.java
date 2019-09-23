@@ -28,6 +28,7 @@ public class RCPi {
         static int SUBTITLE_DELAY_INC = 17;
         static int INFOS = 18;
         static int QUIT = 19;
+        static int DL = 23;
     }
 
 

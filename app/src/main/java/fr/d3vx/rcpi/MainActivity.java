@@ -1,5 +1,6 @@
 package fr.d3vx.rcpi;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -10,7 +11,6 @@ import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -34,7 +34,7 @@ import fr.d3vx.rcpi.udp.Config;
 import fr.d3vx.rcpi.udp.UDP;
 import fr.d3vx.rcpi.view.SpinnerAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private SparseIntArray cmds;
 
@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
         cmds.put(R.id.but_subtitlesdelayup, RCPi.KEYS.SUBTITLE_DELAY_INC);
         cmds.put(R.id.but_infos, RCPi.KEYS.INFOS);
         cmds.put(R.id.but_exit, RCPi.KEYS.QUIT);
+        cmds.put(R.id.but_download, RCPi.KEYS.DL);
 
         cmds.put(R.id.but_clear, -1);
         cmds.put(R.id.but_open, -1);
@@ -252,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void buttonClicked(View v) {
         switch (v.getId()) {
-            case R.id.but_open:
+            case R.id.but_open: {
                 String url = edit_url.getText().toString();
                 // First check url,
                 // Then if no url present process media list
@@ -268,6 +269,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            }
+            case R.id.but_download: {
+                String url = edit_url.getText().toString();
+                if (url.length() > 0) {
+                    udp.send(RCPi.KEYS.DL, url);
+                }
+                break;
+            }
             case R.id.but_list:
                 udp.send(RCPi.KEYS.LIST);
                 break;
@@ -484,6 +493,23 @@ public class MainActivity extends AppCompatActivity {
                 subtitlePref = unpacker.unpackBoolean();
                 log("unpackMsg", "Finfos : SUBTITLES :"+subtitlePref);
                 updateProgress();
+            }
+            else if (action == RCPi.KEYS.DL){
+
+                int nb_data = unpacker.unpackArrayHeader();
+                if (nb_data == 0) {
+                    logW("unpackMsg", "Finfos no data ?");
+                    return;
+                }
+
+                String fileName = unpacker.unpackString();
+                int length = unpacker.unpackInt();
+                int progress = unpacker.unpackInt();
+                String speed = unpacker.unpackString();
+                String remaining = unpacker.unpackString();
+                String size = unpacker.unpackString();
+
+                mediaProgressText.setText(String.format(Locale.FRANCE, "%d% -> %s = %s", progress, speed, remaining));
             }
         }
     }
