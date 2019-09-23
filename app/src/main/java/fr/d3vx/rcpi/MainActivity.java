@@ -503,13 +503,14 @@ public class MainActivity extends Activity {
                 }
 
                 String fileName = unpacker.unpackString();
-                int length = unpacker.unpackInt();
+                float length = unpacker.unpackFloat();
                 int progress = unpacker.unpackInt();
                 String speed = unpacker.unpackString();
                 String remaining = unpacker.unpackString();
                 String size = unpacker.unpackString();
 
-                mediaProgressText.setText(String.format(Locale.FRANCE, "%d% -> %s = %s", progress, speed, remaining));
+                mediaProgressText.setText(String.format(Locale.FRANCE, "%d%% -> %s = %s", progress, speed, remaining));
+                progressBar.setProgress(progress);
             }
         }
     }

@@ -2,9 +2,10 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@android:style/Theme.Material">
-        <!-- Customize your theme here. -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 </resources>

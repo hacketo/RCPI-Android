@@ -3,7 +3,8 @@
     android:viewportHeight="16"
     android:viewportWidth="16"
     android:width="24dp">
-    <path android:fillColor="#000000"
+    <path android:fillColor="@color/font_color"
+        android:fillType="evenOdd"
         android:pathData="M1,14L13,14L13,11L15,11L15,14L15,16L1,16ZM1,11L3,11L3,14L1,14ZM6,1L10,1L10,8L12,8L8,13L4,8L6,8ZM6,1"
         android:strokeColor="#00000000"
         android:strokeWidth="1"/>
